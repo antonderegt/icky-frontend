@@ -8,15 +8,19 @@
       :key="cat.name"
     />
     <button @click="addCategory">Add Category</button>
+    <button @click="getProblems">Show Problems</button>
+    {{ problems }}
   </div>
 </template>
 
 <script>
 import CategoryCard from "@/components/CategoryCard.vue";
+import api from "@/gateways/api.js";
 
 export default {
   data: function() {
     return {
+      problems: [],
       categories: [
         {
           name: "cat 1",
@@ -33,6 +37,9 @@ export default {
     CategoryCard
   },
   methods: {
+    getProblems: function() {
+      api.get('/').then(response => this.problems = response.data);
+    },
     addCategory: function() {
       this.categories.push({ name: "New Cat", items: ["item 1"] });
     }
