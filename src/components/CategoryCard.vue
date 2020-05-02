@@ -8,14 +8,8 @@
       </th>
       <button @click="deleteCategory" class="delete">X</button>
     </tr>
-    <tr v-for="(item, index) in items" :key="item">
-      <td
-        v-if="editItem != index"
-        @click="
-          editItem = index;
-          changedItem = item;
-        "
-      >
+    <tr v-for="(item, index) in items" :key="index">
+      <td v-if="editItem !== index" @click="changeToInputField(index, item)">
         {{ item }}<button @click="deleteItem(index)" class="delete">X</button>
       </td>
       <td v-else>
@@ -45,6 +39,7 @@ export default {
   },
   data: function() {
     return {
+      deleting: false,
       showCategory: true,
       newItem: "",
       editTitle: false,
@@ -56,9 +51,16 @@ export default {
     changeTitle: function() {
       this.editTitle = false;
     },
+    changeToInputField(index, item) {
+      if (!this.deleting) {
+        this.editItem = index;
+        this.changedItem = item;
+      } else this.deleting = false;
+    },
     changeItem: function() {
       this.items[this.editItem] = this.changedItem;
       this.editItem = -1;
+      this.changedItem = "";
     },
     addItem: function() {
       if (this.newItem == "") alert("You have to enter something first!");
@@ -68,6 +70,7 @@ export default {
       }
     },
     deleteItem: function(index) {
+      this.deleting = true;
       this.items.splice(index, 1);
     },
     deleteCategory: function() {
