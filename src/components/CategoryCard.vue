@@ -32,13 +32,17 @@
 </template>
 
 <script>
+import api from "@/gateways/api.js";
+
 export default {
   props: {
     category: String,
-    items: Array
+    problemPk: Number,
+    catPk: Number
   },
   data: function() {
     return {
+      items: [],
       deleting: false,
       showCategory: true,
       newItem: "",
@@ -48,6 +52,11 @@ export default {
     };
   },
   methods: {
+    getItems: function() {
+      api.get(`/${this.problemPk}/${this.catPk}`).then(response => {
+        this.items = response.data.map((item) => {return item.item});
+      });
+    },
     changeTitle: function() {
       this.editTitle = false;
     },
@@ -78,6 +87,9 @@ export default {
       this.items = [];
       this.showCategory = false;
     }
+  },
+  mounted: function() {
+    this.getItems();
   }
 };
 </script>
