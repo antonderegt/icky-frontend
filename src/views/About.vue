@@ -28,7 +28,7 @@ export default {
   },
   methods: {
     getCategories: function() {
-      api.get('/1').then(response => this.categories= response.data);
+      api.get('/1/categories').then(response => this.categories= response.data);
     },
     addCategory: function() {
       this.categories.push({ name: "New Cat", items: ["item 1"] });
