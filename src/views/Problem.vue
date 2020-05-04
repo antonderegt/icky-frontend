@@ -4,7 +4,7 @@
     <ProblemCard
       v-for="cat in categories"
       :category="cat.category"
-      :problemPk=1
+      :problemPk=$route.params.problemPk
       :catPk="cat.pk"
       :key="cat.pk"
     />

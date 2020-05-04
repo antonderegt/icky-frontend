@@ -8,9 +8,9 @@
       </th>
       <button @click="deleteCategory" class="delete">X</button>
     </tr>
-    <tr v-for="(item, index) in items" :key="index">
+    <tr v-for="(item, index) in items" :key="item.pk">
       <td v-if="editItem !== index" @click="changeToInputField(index, item)">
-        {{ item }}<button @click="deleteItem(index)" class="delete">X</button>
+        {{ item.item }}<button @click="deleteItem(index, item.pk)" class="delete">X</button>
       </td>
       <td v-else>
         <input v-model="changedItem" @keyup.enter="changeItem" type="text" />
@@ -37,7 +37,7 @@ import api from "@/gateways/api.js";
 export default {
   props: {
     category: String,
-    problemPk: Number,
+    problemPk: String,
     catPk: Number
   },
   data: function() {
@@ -54,7 +54,7 @@ export default {
   methods: {
     getItems: function() {
       api.get(`/${this.problemPk}/${this.catPk}`).then(response => {
-        this.items = response.data.map((item) => {return item.item});
+        this.items = response.data.map((item) => {return item});
       });
     },
     changeTitle: function() {
@@ -78,9 +78,11 @@ export default {
         this.newItem = "";
       }
     },
-    deleteItem: function(index) {
+    deleteItem: function(index, itemPk) {
       this.deleting = true;
       this.items.splice(index, 1);
+      console.log(`Itempk: ${itemPk}`);
+      api.delete(`/${this.problemPk}/${this.catPk}/${itemPk}`)
     },
     deleteCategory: function() {
       this.category = "";
