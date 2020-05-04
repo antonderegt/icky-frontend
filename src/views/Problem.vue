@@ -1,7 +1,7 @@
 <template>
   <div v-if="$route.params.problemPk" class="about">
     <h1>Problem parts table</h1>
-    <CategoryCard
+    <ProblemCard
       v-for="cat in categories"
       :category="cat.category"
       :problemPk=1
@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import CategoryCard from "@/components/CategoryCard.vue";
+import ProblemCard from "@/components/ProblemCard.vue";
 import api from "@/gateways/api.js";
 
 export default {
@@ -30,7 +30,7 @@ export default {
     };
   },
   components: {
-    CategoryCard
+    ProblemCard
   },
   methods: {
     getCategories: function() {
