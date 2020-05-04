@@ -86,6 +86,7 @@ export default {
       this.category = "";
       this.items = [];
       this.showCategory = false;
+      api.delete(`/${this.problemPk}/${this.catPk}`)
     }
   },
   mounted: function() {
