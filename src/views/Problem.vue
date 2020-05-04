@@ -1,5 +1,5 @@
 <template>
-  <div class="about">
+  <div v-if="$route.params.problemPk" class="about">
     <h1>Problem parts table</h1>
     <CategoryCard
       v-for="cat in categories"
@@ -10,6 +10,9 @@
     />
     <button @click="addCategory">Add Category</button>
   </div>
+  <div v-else>
+    <p>No problems at the moment</p>
+  </div>
 </template>
 
 <script>
@@ -17,10 +20,13 @@ import CategoryCard from "@/components/CategoryCard.vue";
 import api from "@/gateways/api.js";
 
 export default {
+  props: {
+    problemPk: Number
+  },
   data: function() {
     return {
       problems: [],
-      categories: [],
+      categories: []
     };
   },
   components: {
@@ -28,7 +34,8 @@ export default {
   },
   methods: {
     getCategories: function() {
-      api.get('/1/categories').then(response => this.categories= response.data);
+      this.problem = this.$route.params.problemPk;
+      api.get(`/${this.problem}/categories`).then(response => this.categories= response.data);
     },
     addCategory: function() {
       this.categories.push({ name: "New Cat", items: ["item 1"] });

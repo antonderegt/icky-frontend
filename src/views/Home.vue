@@ -1,18 +1,27 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" />
+    <h1>Welcome to Icky</h1>
+    <h3>Problems</h3>
+      <p v-for="problem in problems" :key="problem.pk"><router-link :to="{path: '/problem/' + problem.pk}">{{ problem.problem }}</router-link></p>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from "@/components/HelloWorld.vue";
+import api from "@/gateways/api.js";
 
 export default {
-  name: "Home",
-  components: {
-    HelloWorld
+  data: function() {
+    return {
+      problems: []
+    };
+  },
+  methods: {
+    getProblems: function() {
+      api.get(`/`).then(response => this.problems= response.data.data);
+    }
+  },
+  mounted: function() {
+    this.getProblems();
   }
 };
 </script>
