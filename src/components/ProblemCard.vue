@@ -9,12 +9,12 @@
       <button @click="deleteCategory" class="delete">X</button>
     </tr>
     <tr v-for="(item, index) in items" :key="item.pk">
-      <td v-if="editItem !== index" @click="changeToInputField(index, item)">
+      <td v-if="editItem !== index" @click="changeToInputField(index, item.item)">
         {{ item.item }}<button @click="deleteItem(index, item.pk)" class="delete">X</button>
       </td>
       <td v-else>
-        <input v-model="changedItem" @keyup.enter="changeItem" type="text" />
-        <button @click="changeItem" class="add">V</button>
+        <input v-model="changedItem" @keyup.enter="changeItem(item.pk)" type="text" />
+        <button @click="changeItem(item.pk)" class="add">V</button>
       </td>
     </tr>
     <tr>
@@ -36,12 +36,13 @@ import api from "@/gateways/api.js";
 
 export default {
   props: {
-    category: String,
     problemPk: String,
+    catName: String,
     catPk: Number
   },
   data: function() {
     return {
+      category: this.catName,
       items: [],
       deleting: false,
       showCategory: true,
@@ -58,6 +59,7 @@ export default {
       });
     },
     changeTitle: function() {
+      api.put(`/${this.problemPk}/${this.catPk}`, { category: this.category})
       this.editTitle = false;
     },
     changeToInputField(index, item) {
@@ -66,22 +68,24 @@ export default {
         this.changedItem = item;
       } else this.deleting = false;
     },
-    changeItem: function() {
-      this.items[this.editItem] = this.changedItem;
+    changeItem: function(itemPk) {
+      api.put(`/${this.problemPk}/${this.catPk}/${itemPk}`, { item: this.changedItem})
+      this.items[this.editItem].item = this.changedItem;
       this.editItem = -1;
       this.changedItem = "";
     },
     addItem: function() {
       if (this.newItem == "") alert("You have to enter something first!");
       else {
-        this.items.push(this.newItem);
+        api.put(`/${this.problemPk}/${this.catPk}/new`, { item: this.newItem}).then(response => {
+          this.items.push(response.data);
+        })
         this.newItem = "";
       }
     },
     deleteItem: function(index, itemPk) {
       this.deleting = true;
       this.items.splice(index, 1);
-      console.log(`Itempk: ${itemPk}`);
       api.delete(`/${this.problemPk}/${this.catPk}/${itemPk}`)
     },
     deleteCategory: function() {
