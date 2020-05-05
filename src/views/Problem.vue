@@ -5,19 +5,19 @@
       <input v-model="problem.problem" @keyup.enter="changeTitle" type="text" />
       <button @click="changeTitle" class="add">V</button>
     </h1>
-    <ProblemCard
+    <CategoryCard
       v-for="cat in categories"
       :catName="cat.category"
-      :problemPk=$route.params.problemPk
+      :problemPk="$route.params.problemPk"
       :catPk="cat.pk"
       :key="cat.pk"
     />
-  <button @click="addCategory">Add Category</button>
+    <button @click="addCategory">Add Category</button>
   </div>
 </template>
 
 <script>
-import ProblemCard from "@/components/ProblemCard.vue";
+import CategoryCard from "@/components/CategoryCard.vue";
 import api from "@/gateways/api.js";
 
 export default {
@@ -32,29 +32,40 @@ export default {
     };
   },
   components: {
-    ProblemCard
+    CategoryCard
   },
   methods: {
     getProblem: function() {
       this.problem = this.$route.params.problemPk;
-      api.get(`/${this.problem}`)
-      .then(response => this.problem = response.data)
-      .catch(error => { console.log(error) });
+      api
+        .get(`/${this.problem}`)
+        .then(response => (this.problem = response.data))
+        .catch(error => {
+          console.log(error);
+        });
     },
     getCategories: function() {
       this.problem = this.$route.params.problemPk;
-      api.get(`/${this.problem}/categories`)
-      .then(response => this.categories= response.data)
-      .catch(error => { console.log(error) });
+      api
+        .get(`/${this.problem}/categories`)
+        .then(response => (this.categories = response.data))
+        .catch(error => {
+          console.log(error);
+        });
     },
     addCategory: function() {
-      api.put(`/${this.problem.pk}/new`, { category: "New category" }).then(response => {
-        this.categories.push(response.data);
-      })
+      api
+        .put(`/${this.problem.pk}/new`, { category: "New category" })
+        .then(response => {
+          this.categories.push(response.data);
+        });
     },
     changeTitle: function() {
-      api.put(`/${this.problem.pk}`, { problem: this.problem.problem})
-      .catch(error => { console.log(error) });
+      api
+        .put(`/${this.problem.pk}`, { problem: this.problem.problem })
+        .catch(error => {
+          console.log(error);
+        });
       this.editTitle = false;
     }
   },
