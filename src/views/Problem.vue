@@ -54,6 +54,7 @@ export default {
     },
     changeTitle: function() {
       api.put(`/${this.problem.pk}`, { problem: this.problem.problem})
+      .catch(error => { console.log(error) });
       this.editTitle = false;
     }
   },

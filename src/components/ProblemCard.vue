@@ -56,10 +56,12 @@ export default {
     getItems: function() {
       api.get(`/${this.problemPk}/${this.catPk}`).then(response => {
         this.items = response.data.map((item) => {return item});
-      });
+      })
+      .catch(error => { console.log(error) });
     },
     changeTitle: function() {
       api.put(`/${this.problemPk}/${this.catPk}`, { category: this.category})
+      .catch(error => { console.log(error) });
       this.editTitle = false;
     },
     changeToInputField(index, item) {
@@ -70,6 +72,7 @@ export default {
     },
     changeItem: function(itemPk) {
       api.put(`/${this.problemPk}/${this.catPk}/${itemPk}`, { item: this.changedItem})
+      .catch(error => { console.log(error) });
       this.items[this.editItem].item = this.changedItem;
       this.editItem = -1;
       this.changedItem = "";
@@ -80,6 +83,7 @@ export default {
         api.put(`/${this.problemPk}/${this.catPk}/new`, { item: this.newItem}).then(response => {
           this.items.push(response.data);
         })
+        .catch(error => { console.log(error) });
         this.newItem = "";
       }
     },
@@ -87,12 +91,14 @@ export default {
       this.deleting = true;
       this.items.splice(index, 1);
       api.delete(`/${this.problemPk}/${this.catPk}/${itemPk}`)
+      .catch(error => { console.log(error) });
     },
     deleteCategory: function() {
       this.category = "";
       this.items = [];
       this.showCategory = false;
       api.delete(`/${this.problemPk}/${this.catPk}`)
+      .catch(error => { console.log(error) });
     }
   },
   mounted: function() {
