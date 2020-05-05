@@ -21,9 +21,6 @@ import CategoryCard from "@/components/CategoryCard.vue";
 import api from "@/gateways/api.js";
 
 export default {
-  props: {
-    problemPk: Number
-  },
   data: function() {
     return {
       problem: "",
