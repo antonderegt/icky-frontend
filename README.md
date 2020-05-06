@@ -5,6 +5,7 @@
 - [] Migrate to PostgreSQL
 - [] Add authentication
 - [] Add loading message/spinner
+- [] Add error handling
 
 ## Project setup
 ```
