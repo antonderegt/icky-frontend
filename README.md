@@ -1,5 +1,10 @@
 # frontend
 
+## ToDo
+- [] Migrate to TypeScript
+- [] Migrate to PostgreSQL
+- [] Add authentication
+
 ## Project setup
 ```
 npm install
