@@ -6,7 +6,7 @@
       <button @click="changeTitle" class="add">V</button>
     </h1>
     <CategoryCard
-      id="category"
+      id="category-card"
       v-for="cat in categories"
       :catName="cat.category"
       :problemPk="$route.params.problemPk"
@@ -37,37 +37,39 @@ export default {
   },
   methods: {
     getProblem: async function() {
-      api
-        .get(`/${this.problem.pk}`)
-        .then(response => (this.problem = response.data))
-        .then(() => this.getCategories())
-        .catch(error => {
-          console.log(error);
-        });
+      try {
+        this.problem = await api.get(`/${this.problem.pk}`);
+        this.getCategories();
+      } catch (error) {
+        alert(error);
+      }
     },
     getCategories: async function() {
-      api
-        .get(`/${this.problem.pk}/categories`)
-        .then(response => (this.categories = response.data))
-        .catch(error => {
-          console.log(error);
-        });
+      try {
+        this.categories = await api.get(`/${this.problem.pk}/categories`);
+      } catch (error) {
+        alert(error);
+      }
     },
     addCategory: async function() {
-      api
-        .put(`/${this.problem.pk}/new`, { category: "New category" })
-        .then(response => {
-          this.categories.push(response.data);
+      try {
+        const category = await api.put(`/${this.problem.pk}/new`, {
+          category: "New category"
         });
+        console.log(category);
+        this.categories.push(category);
+      } catch (error) {
+        alert(error);
+      }
     },
     changeTitle: async function() {
-      api
-        .put(`/${this.problem.pk}`, { problem: this.problem.problem })
-        .catch(error => {
-          console.log(error);
-        });
+      try {
+        api.put(`/${this.problem.pk}`, { problem: this.problem.problem });
+      } catch (error) {
+        alert(error);
+      }
       this.editTitle = false;
-    }
+    },
   },
   mounted: async function() {
     if (this.$route.params.problemPk) {

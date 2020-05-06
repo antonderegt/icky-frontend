@@ -20,8 +20,13 @@ export default {
     };
   },
   methods: {
-    getProblems: function() {
-      api.get(`/`).then(response => (this.problems = response.data.data));
+    getProblems: async function() {
+      try {
+        const problems = await api.get(`/`);
+        this.problems = problems.data;
+      } catch (error) {
+        alert(error);
+      }
     }
   },
   mounted: function() {

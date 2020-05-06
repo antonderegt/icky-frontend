@@ -61,24 +61,21 @@ export default {
     };
   },
   methods: {
-    getItems: function() {
-      api
-        .get(`/${this.problemPk}/${this.catPk}`)
-        .then(response => {
-          this.items = response.data.map(item => {
-            return item;
-          });
-        })
-        .catch(error => {
-          console.log(error);
-        });
+    getItems: async function() {
+      try {
+        this.items = await api.get(`/${this.problemPk}/${this.catPk}`);
+      } catch (error) {
+        alert(error);
+      }
     },
     changeTitle: function() {
-      api
-        .put(`/${this.problemPk}/${this.catPk}`, { category: this.category })
-        .catch(error => {
-          console.log(error);
+      try {
+        api.put(`/${this.problemPk}/${this.catPk}`, {
+          category: this.category
         });
+      } catch (error) {
+        alert(error);
+      }
       this.editTitle = false;
     },
     changeToInputField(index, item) {
@@ -88,45 +85,49 @@ export default {
       } else this.deleting = false;
     },
     changeItem: function(itemPk) {
-      api
-        .put(`/${this.problemPk}/${this.catPk}/${itemPk}`, {
+      try {
+        api.put(`/${this.problemPk}/${this.catPk}/${itemPk}`, {
           item: this.changedItem
-        })
-        .catch(error => {
-          console.log(error);
         });
+      } catch (error) {
+        alert(error);
+      }
       this.items[this.editItem].item = this.changedItem;
       this.editItem = -1;
       this.changedItem = "";
     },
-    addItem: function() {
+    addItem: async function() {
       if (this.newItem == "") alert("You have to enter something first!");
       else {
-        api
-          .put(`/${this.problemPk}/${this.catPk}/new`, { item: this.newItem })
-          .then(response => {
-            this.items.push(response.data);
-          })
-          .catch(error => {
-            console.log(error);
+        try {
+          const item = await api.put(`/${this.problemPk}/${this.catPk}/new`, {
+            item: this.newItem
           });
+          this.items.push(item);
+        } catch (error) {
+          alert(error);
+        }
         this.newItem = "";
       }
     },
     deleteItem: function(index, itemPk) {
       this.deleting = true;
       this.items.splice(index, 1);
-      api.delete(`/${this.problemPk}/${this.catPk}/${itemPk}`).catch(error => {
-        console.log(error);
-      });
+      try {
+        api.delete(`/${this.problemPk}/${this.catPk}/${itemPk}`);
+      } catch (error) {
+        alert(error);
+      }
     },
     deleteCategory: function() {
       this.category = "";
       this.items = [];
       this.showCategory = false;
-      api.delete(`/${this.problemPk}/${this.catPk}`).catch(error => {
-        console.log(error);
-      });
+      try {
+        api.delete(`/${this.problemPk}/${this.catPk}`);
+      } catch (error) {
+        alert(error);
+      }
     }
   },
   mounted: function() {

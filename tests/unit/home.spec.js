@@ -17,8 +17,10 @@ describe("Home.vue", () => {
     });
 
     it("shows a problem after it's added", async () => {
-        wrapper.setData({ problems: [{pk: 1, problem: "Jest" }] })
+        wrapper.setData({ problems: 
+            [{pk: 1, problem: "Jest" }]
+        });
         await wrapper.vm.$nextTick()
-        expect(wrapper.text()).toContain("Jest")
+        expect(wrapper.html()).toContain("Jest")
     });
 });
