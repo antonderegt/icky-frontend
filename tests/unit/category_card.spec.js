@@ -2,20 +2,19 @@ import { shallowMount } from "@vue/test-utils";
 import CategoryCard from "@/components/CategoryCard.vue";
 
 describe("CategoryCard.vue", () => {
-  it("renders category when passed", async () => {
-    const wrapper = shallowMount(CategoryCard, {
-      propsData: {
-        problemPk: "1",
-        catName: "Category Name",
-        catPk: 1
-      }
-    });
-    // console.log(CategoryCard);
-    // console.log(wrapper.html());
+  const wrapper = shallowMount(CategoryCard, {
+    propsData: {
+      problemPk: "1",
+      catName: "Category Name",
+      catPk: 1
+    }
+  });
 
-    // wrapper.vm.getItems(); //.$mount;
-    // await wrapper.vm.$nextTick()
-    // console.log(wrapper.html());
+  it("renders category when passed", async () => {
     expect(wrapper.html()).toContain('Category Name');
   });
+
+  it("receives the correct props", () => {
+    expect(wrapper.props().problemPk).toBe("1");
+  })
 });

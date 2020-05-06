@@ -6,13 +6,14 @@
       <button @click="changeTitle" class="add">V</button>
     </h1>
     <CategoryCard
+      id="category"
       v-for="cat in categories"
       :catName="cat.category"
       :problemPk="$route.params.problemPk"
       :catPk="cat.pk"
       :key="cat.pk"
     />
-    <button @click="addCategory">Add Category</button>
+    <button id="add-category" @click="addCategory">Add Category</button>
   </div>
 </template>
 
@@ -23,7 +24,10 @@ import api from "@/gateways/api.js";
 export default {
   data: function() {
     return {
-      problem: "",
+      problem: {
+        problem: "",
+        pk: "1"
+      },
       categories: [],
       editTitle: false
     };
@@ -32,32 +36,31 @@ export default {
     CategoryCard
   },
   methods: {
-    getProblem: function() {
-      this.problem = this.$route.params.problemPk;
+    getProblem: async function() {
       api
-        .get(`/${this.problem}`)
+        .get(`/${this.problem.pk}`)
         .then(response => (this.problem = response.data))
+        .then(() => this.getCategories())
         .catch(error => {
           console.log(error);
         });
     },
-    getCategories: function() {
-      this.problem = this.$route.params.problemPk;
+    getCategories: async function() {
       api
-        .get(`/${this.problem}/categories`)
+        .get(`/${this.problem.pk}/categories`)
         .then(response => (this.categories = response.data))
         .catch(error => {
           console.log(error);
         });
     },
-    addCategory: function() {
+    addCategory: async function() {
       api
         .put(`/${this.problem.pk}/new`, { category: "New category" })
         .then(response => {
           this.categories.push(response.data);
         });
     },
-    changeTitle: function() {
+    changeTitle: async function() {
       api
         .put(`/${this.problem.pk}`, { problem: this.problem.problem })
         .catch(error => {
@@ -66,9 +69,11 @@ export default {
       this.editTitle = false;
     }
   },
-  mounted: function() {
+  mounted: async function() {
+    if (this.$route.params.problemPk) {
+      this.problem.pk = this.$route.params.problemPk;
+    } else this.problem.pk = 1;
     this.getProblem();
-    this.getCategories();
   }
 };
 </script>

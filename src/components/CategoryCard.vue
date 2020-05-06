@@ -46,7 +46,7 @@ export default {
   props: {
     problemPk: String,
     catName: String,
-    catPk: Number
+    catPk: String
   },
   data: function() {
     return {
