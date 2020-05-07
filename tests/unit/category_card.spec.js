@@ -51,11 +51,20 @@ describe("CategoryCard.vue", () => {
     expect(defaultData).toMatchObject(expectedData);
   })
 
-  it("renders category when passed", async () => {
+  it("receives correct props", async () => {
     expect(wrapper.html()).toContain('mockCategory');
+    expect(wrapper.props().problemPk).toBe(1);
+    expect(wrapper.props().catPk).toBe(1);
   });
 
-  it("receives the correct props", () => {
-    expect(wrapper.props().problemPk).toBe(1);
+  it("renders items after api call", () => {
+    expect(wrapper.findAll("#item").length).toBe(2);
   })
+
+  it.todo("changes title");
+  it.todo("shows input field when clicked");
+  it.todo("changes item");
+  it.todo("adds item after input");
+  it.todo("deletes item after button press");
+  it.todo("deletes category after button press");
 });

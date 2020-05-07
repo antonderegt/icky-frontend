@@ -8,7 +8,7 @@
       </th>
       <button @click="deleteCategory" class="delete">X</button>
     </tr>
-    <tr v-for="(item, index) in items" :key="item.pk">
+    <tr v-for="(item, index) in items" id="item" :key="item.pk">
       <td
         v-if="editItem !== index"
         @click="changeToInputField(index, item.item)"
