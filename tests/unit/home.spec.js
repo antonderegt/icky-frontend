@@ -1,26 +1,41 @@
 import { shallowMount } from "@vue/test-utils";
 import Home from "@/views/Home.vue";
+import mockAxios from "axios";
 
 describe("Home.vue", () => {
-    const wrapper = shallowMount(Home, {
-        stubs: ["router-link"]
+  let wrapper;
+
+  beforeEach(() => {
+    mockAxios.get.mockImplementationOnce(() =>
+      Promise.resolve({
+        data: {
+          data: [
+            { problem: "mockProblem1", pk: 15 },
+            { problem: "mockProblem2", pk: 30 }
+          ]
+        }
+      })
+    );
+
+    wrapper = shallowMount(Home, {
+      stubs: ["router-link", "router-view"]
     });
 
-    it("renders the title", () => {
-        expect(wrapper.html()).toContain("Welcome to Icky");
-    });
+    window.alert = (jsdomAlert) => { console.log(jsdomAlert) };
+    jest.clearAllMocks();
+  });
 
-    it("sets the correct default data", () => {
-        expect(typeof Home.data).toBe('function')
-        const defaultData = Home.data()
-        expect(defaultData.problems).toMatchObject([])
-    });
+  it("renders the title", () => {
+    expect(wrapper.html()).toContain("Welcome to Icky");
+  });
 
-    it("shows a problem after it's added", async () => {
-        wrapper.setData({ problems: 
-            [{pk: 1, problem: "Jest" }]
-        });
-        await wrapper.vm.$nextTick()
-        expect(wrapper.html()).toContain("Jest")
-    });
+  it("sets the correct default data", () => {
+    expect(typeof Home.data).toBe('function')
+    const defaultData = Home.data()
+    expect(defaultData.problems).toMatchObject([])
+  });
+
+  it("loads problems from api", async () => {
+    expect(wrapper.findAll("#problem").length).toBe(2);
+  });
 });

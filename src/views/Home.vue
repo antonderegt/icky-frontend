@@ -2,7 +2,7 @@
   <div class="home">
     <h1>Welcome to Icky</h1>
     <h3>Problems</h3>
-    <p v-for="problem in problems" :key="problem.pk">
+    <p v-for="problem in problems" id="problem" :key="problem.pk">
       <router-link :to="{ path: '/problem/' + problem.pk }">{{
         problem.problem
       }}</router-link>

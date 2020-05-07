@@ -9,7 +9,7 @@
       id="category-card"
       v-for="cat in categories"
       :catName="cat.category"
-      :problemPk="$route.params.problemPk"
+      :problemPk="problem.pk"
       :catPk="cat.pk"
       :key="cat.pk"
     />
@@ -39,7 +39,6 @@ export default {
     getProblem: async function() {
       try {
         this.problem = await api.get(`/${this.problem.pk}`);
-        this.getCategories();
       } catch (error) {
         alert(error);
       }
@@ -56,13 +55,12 @@ export default {
         const category = await api.put(`/${this.problem.pk}/new`, {
           category: "New category"
         });
-        console.log(category);
         this.categories.push(category);
       } catch (error) {
         alert(error);
       }
     },
-    changeTitle: async function() {
+    changeTitle: function() {
       try {
         api.put(`/${this.problem.pk}`, { problem: this.problem.problem });
       } catch (error) {
@@ -71,11 +69,12 @@ export default {
       this.editTitle = false;
     },
   },
-  mounted: async function() {
+  created: async function() {
     if (this.$route.params.problemPk) {
       this.problem.pk = this.$route.params.problemPk;
     } else this.problem.pk = 1;
     this.getProblem();
+    this.getCategories();
   }
 };
 </script>

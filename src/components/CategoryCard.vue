@@ -44,13 +44,13 @@ import api from "@/gateways/api.js";
 
 export default {
   props: {
-    problemPk: String,
+    problemPk: Number,
     catName: String,
-    catPk: String
+    catPk: Number
   },
   data: function() {
     return {
-      category: this.catName,
+      category: "",
       items: [],
       deleting: false,
       showCategory: true,
@@ -131,6 +131,7 @@ export default {
     }
   },
   mounted: function() {
+    this.category = this.catName;
     this.getItems();
   }
 };
