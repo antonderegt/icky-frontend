@@ -4,10 +4,18 @@
 
 <script>
 export default {
-    
-  mounted: function() {
-        console.log("remove jwt");
-        localStorage.removeItem('jwt');
+    methods: {
+        removeItem(sKey, sPath, sDomain) {
+            document.cookie = encodeURIComponent(sKey) + 
+                "=; expires=Thu, 01 Jan 1970 00:00:00 GMT" + 
+                (sDomain ? "; domain=" + sDomain : "") + 
+                (sPath ? "; path=" + sPath : "");
+
+            console.log("removed cookie");
+        }
+    },
+    mounted: function() {
+        this.removeItem("Token");
         this.$router.push('/');
     }
 }
