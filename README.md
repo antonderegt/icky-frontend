@@ -1,11 +1,11 @@
 # frontend
 
 ## ToDo
-- [] Migrate to TypeScript
-- [] Migrate to PostgreSQL
-- [] Add authentication
-- [] Add loading message/spinner
-- [] Add error handling
+- [ ] Migrate to TypeScript
+- [ ] Migrate to PostgreSQL
+- [X] Add authentication
+- [ ] Add loading message/spinner
+- [ ] Add error handling
 
 ## Project setup
 ```
