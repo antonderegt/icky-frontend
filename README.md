@@ -4,6 +4,7 @@
 - [ ] Migrate to TypeScript
 - [ ] Migrate to PostgreSQL
 - [X] Add authentication
+- [X] Add Vuex
 - [ ] Add loading message/spinner
 - [ ] Add error handling
 
