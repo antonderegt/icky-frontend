@@ -7,7 +7,6 @@ const Login = {
     const response = await axios.post(`${baseURL}/`, data, {
       headers: {
         "Content-Type": "application/json",
-        // "Authorization": "Token c35b929929c4aded4412f88a9f8c5858d3396e1a"
       }
     });
     return response.data;

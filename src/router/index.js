@@ -1,5 +1,6 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
+import store from "../store/index.js";
 import Home from "../views/Home.vue";
 import Login from "../views/Login.vue";
 import Logout from "../views/Logout.vue";
@@ -19,17 +20,11 @@ const routes = [
     path: "/login",
     name: "Login",
     component: Login,
-    meta: {
-      guest: true
-    }
   },
   {
     path: "/logout",
     name: "Logout",
     component: Logout,
-    meta: {
-      guest: true
-    }
   },
   {
     path: "/problem/:problemPk",
@@ -51,43 +46,16 @@ const router = new VueRouter({
   routes
 });
 
-function getCookie(name) {
-  var match = document.cookie.match(
-    new RegExp("(^| )" + name + "=([^;]+)")
-  );
-  if (match) {
-    return match[2];
-  } else {
-    return null;
-  }
-};
-
 router.beforeEach((to, from, next) => {
-  console.log("from: " + from.fullPath);
-  console.log("to: " + to.fullPath);
-  console.log("next: " + next.fullPath);
-  const tokenCookie = getCookie("Token");
   if(to.matched.some(record => record.meta.requiresAuth)) {
-    console.log("reqAuth");
-    if(tokenCookie == null) {
-      next({
-        path: '/login',
-        params: { nextUrl: to.fullPath }
-      })
-    } else {
+    if(store.getters.isLoggedIn) {
       next();
+      return;
     }
-  } else if(to.matched.some(record => record.meta.guest)) {
-    if(tokenCookie == null) {
-      next();
-    } else {
-      next();
-    }
+    next("/login");
   } else {
-    next()
+    next();
   }
 });
-
-
 
 export default router;
