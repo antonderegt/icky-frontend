@@ -37,15 +37,20 @@ export default {
   },
   methods: {
     getProblem: async function() {
-      try {
-        this.problem = await api.get(`/${this.problem.pk}`);
-      } catch (error) {
-        alert(error);
+      let problem = this.$store.getters.problems.get(parseInt(this.problem.pk));
+      if(problem !== undefined) {
+        this.problem.problem = problem.problem;
+      } else {
+        try {
+          this.problem = await this.$store.dispatch("getProblem", this.problem.pk);
+        } catch (error) {
+          alert(error);
+        } 
       }
     },
     getCategories: async function() {
       try {
-        this.categories = await api.get(`/${this.problem.pk}/categories`);
+        this.categories = await this.$store.dispatch("getCategories", this.problem.pk);
       } catch (error) {
         alert(error);
       }

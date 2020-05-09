@@ -1,9 +1,12 @@
 <template>
-  <table v-if="showCategory">
+  <table v-if="showCategory" class="center">
     <tr>
-      <th v-if="!editTitle" @click="editTitle = true">{{ category }}</th>
+      <th v-if="!editTitle" @click="editTitle = true">
+        <p>
+         {{ category }} 
+        </p></th>
       <th v-else>
-        <input v-model="category" @keyup.enter="changeTitle" type="text" />
+        <input v-model="category" @keyup.enter="changeTitle" type="text" autofocus />
         <button @click="changeTitle" class="add">V</button>
       </th>
       <button @click="deleteCategory" class="delete">X</button>
@@ -13,8 +16,8 @@
         v-if="editItem !== index"
         @click="changeToInputField(index, item.item)"
       >
-        {{ item.item
-        }}<button @click="deleteItem(index, item.pk)" class="delete">X</button>
+        <p>{{ item.item
+        }}</p>
       </td>
       <td v-else>
         <input
@@ -24,6 +27,7 @@
         />
         <button @click="changeItem(item.pk)" class="add">V</button>
       </td>
+        <button @click="deleteItem(index, item.pk)" class="delete">X</button>
     </tr>
     <tr>
       <td>
@@ -62,11 +66,15 @@ export default {
   },
   methods: {
     getItems: async function() {
-      try {
-        this.items = await api.get(`/${this.problemPk}/${this.catPk}`);
-      } catch (error) {
-        alert(error);
-      }
+      const problem = { problemPk: this.problemPk, catPk: this.catPk} 
+      this.$store
+        .dispatch("getItems", problem)
+        .then(res => {
+          this.items = res;
+        })
+        .catch(error => {
+          alert(error);
+        })
     },
     changeTitle: function() {
       try {
@@ -138,30 +146,57 @@ export default {
 </script>
 
 <style scoped>
+
+table.center {
+  margin-left:auto; 
+  margin-right:auto;
+}
+
+p {
+  margin: 2px;
+}
+
+tr,td {
+  text-align:left;
+}
+td:first-child {
+  padding-left:20px;
+  padding-right:0;
+}
+
 input {
-  /* width: calc(100% - 40px); */
+  box-sizing: border-box;
   border: 0;
-  padding: 6px;
+  padding-left: 6px;
+  outline: none;
   font-size: 1.1em;
   background-color: #6dbfbf;
   color: rgb(38, 34, 34);
 }
 
 .delete {
-  background-color: tomato;
+  background-color:whitesmoke;
   border: 0;
   border-radius: 15%;
-  color: whitesmoke;
+  color: tomato;
   font-weight: bold;
   margin: 5px;
 }
+.delete:hover {
+  background-color: tomato;
+  color: whitesmoke;
+}
 
 .add {
-  background-color: yellowgreen;
+  background-color: whitesmoke;
   border: 0;
   border-radius: 15%;
-  color: whitesmoke;
+  color:yellowgreen;
   font-weight: bold;
   margin: 5px;
+}
+.add:hover {
+  background-color: yellowgreen;
+  color: whitesmoke;
 }
 </style>

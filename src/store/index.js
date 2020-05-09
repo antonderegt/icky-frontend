@@ -1,6 +1,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import login from "@/gateways/auth.js";
+import api from "@/gateways/api.js";
 import axios from "axios";
 
 Vue.use(Vuex);
@@ -23,7 +24,8 @@ export default new Vuex.Store({
   state: {
     status: "",
     token: checkCookieName("Token") || "",
-    user: {}
+    user: {},
+    problems: new Map()
   },
   mutations: {
     auth_request(state) {
@@ -35,6 +37,35 @@ export default new Vuex.Store({
       state.user = user;
     },
     auth_error(state) {
+      state.status = "error";
+    },
+    get_problems_success(state, problems) {
+      state.status = "success";
+      problems.map(problem => {
+        if(state.problems.has(problem.pk)) {
+          console.log("Problem already exists");
+        } else {
+          state.problems.set(problem.pk, { problem: problem.problem, categories: new Map() });
+        }
+      })
+    },
+    get_problem_success(state, problem) {
+      state.status = "success";
+      state.problems.set(problem.pk, { problem: problem.problem, categories: new Map() });
+    },
+    get_categories_success(state, cats) {
+      state.status = "success";
+      const problemPk = cats.problemPk;
+      const categories = cats.categories;
+      categories.map(cat => {
+        state.problems.get(parseInt(problemPk)).categories.set(cat.pk, { category: cat.category, items: new Map() });
+      })
+    },
+    get_items_success(state, items) {
+      state.status = "success";
+      state.items = items;
+    },
+    get_error(state) {
       state.status = "error";
     },
     logout(state) {
@@ -66,7 +97,6 @@ export default new Vuex.Store({
 
               // CHECK COOKIE:
               const tokenCookie = checkCookieName("Token");
-              console.log("COOKIE TOKEN: " + tokenCookie);
               if (tokenCookie == null) {
                 commit("auth_error");
                 removeCookie("Token");
@@ -94,11 +124,80 @@ export default new Vuex.Store({
         delete axios.defaults.headers.common["Authorization"];
         resolve();
       });
+    },
+    getProblems({ commit }) {
+      return new Promise((resolve, reject) => {
+        api
+          .get("/")
+          .then(res => {
+            commit("get_problems_success", res.data);
+            resolve(res.data);
+          })
+          .catch(error => {
+            commit("get_error");
+            reject(error);
+          })
+        });
+    },
+    getProblem({ commit }, pk) {
+      return new Promise((resolve, reject) => {
+        api
+          .get(`/${pk}`)
+          .then(res => {
+            commit("get_problem_success", res);
+            resolve(res);
+          })
+          .catch(error => {
+            commit("get_error");
+            reject(error);
+          })
+        });
+    },
+    getCategories({ commit }, pk) {
+      return new Promise((resolve, reject) => {
+        api
+          .get(`/${pk}/categories`)
+          .then(res => {
+            const cats = {
+              problemPk: pk,
+              categories: res
+            }
+            commit("get_categories_success", cats);
+            resolve(res);
+          })
+          .catch(error => {
+            commit("get_error");
+            reject(error);
+          })
+        });
+    },
+    getItems({ commit }, problem) {
+      return new Promise((resolve, reject) => {
+        api
+          .get(`/${problem.problemPk}/${problem.catPk}`)
+          .then(res => {
+            const items = {
+              problemPk: problem.problemPk,
+              catPk: problem.catPk,
+              items: res
+            }
+            commit("get_items_success", items);
+            resolve(res);
+          })
+          .catch(error => {
+            commit("get_error");
+            reject(error);
+          })
+        });
     }
   },
   modules: {},
   getters: {
     isLoggedIn: state => !!state.token,
-    authStatus: state => state.status
+    tokenCookie: state => state.token,
+    authStatus: state => state.status,
+    problems: state => state.problems,
+    categories: state => state.categories,
+    items: state => state.items
   }
 });

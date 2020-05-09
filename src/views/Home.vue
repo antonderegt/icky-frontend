@@ -11,8 +11,6 @@
 </template>
 
 <script>
-import api from "@/gateways/api.js";
-
 export default {
   data: function() {
     return {
@@ -21,12 +19,14 @@ export default {
   },
   methods: {
     getProblems: async function() {
-      try {
-        const problems = await api.get(`/`);
-        this.problems = problems.data;
-      } catch (error) {
-        alert(error);
-      }
+      this.$store
+        .dispatch("getProblems")
+        .then(res => {
+          this.problems = res;
+        })
+        .catch(error => {
+          alert(error);
+        })
     }
   },
   mounted: function() {
