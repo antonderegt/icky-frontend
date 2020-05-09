@@ -4,12 +4,25 @@
     <form>
       <label for="email">E-Mail Address</label>
       <div>
-        <input id="email" type="email" v-model="email" placeholder="Email" required autofocus />
+        <input
+          id="email"
+          type="email"
+          v-model="email"
+          placeholder="Email"
+          required
+          autofocus
+        />
       </div>
       <div>
         <label for="password">Password</label>
         <div>
-          <input id="password" type="password" v-model="password" placeholder="Password" required />
+          <input
+            id="password"
+            type="password"
+            v-model="password"
+            placeholder="Password"
+            required
+          />
         </div>
       </div>
       <div>
@@ -36,7 +49,8 @@ export default {
         password: this.password
       };
 
-      this.$store.dispatch("login", user)
+      this.$store
+        .dispatch("login", user)
         .then(() => {
           if (this.$route.params.nextUrl != null) {
             this.$router.push(this.$route.params.nextUrl);

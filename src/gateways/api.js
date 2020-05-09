@@ -6,7 +6,7 @@ const Api = {
   get: async term => {
     const response = await axios.get(`${baseURL}${term}`, {
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "application/json"
       }
     });
     return response.data;
@@ -14,7 +14,7 @@ const Api = {
   post: async term => {
     const response = await axios.post(`${baseURL}${term}`, {
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "application/json"
       }
     });
     return response.data;
@@ -22,7 +22,7 @@ const Api = {
   put: async (term, data) => {
     const response = await axios.put(`${baseURL}${term}`, data, {
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "application/json"
       }
     });
     return response.data;
@@ -30,7 +30,7 @@ const Api = {
   delete: async term => {
     const response = await axios.delete(`${baseURL}${term}`, {
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "application/json"
       }
     });
     return response.data;

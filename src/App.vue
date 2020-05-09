@@ -11,18 +11,19 @@
 
 <script>
 export default {
-  computed : {
-    isLoggedIn : function(){ return this.$store.getters.isLoggedIn}
+  computed: {
+    isLoggedIn: function() {
+      return this.$store.getters.isLoggedIn;
+    }
   },
   methods: {
-    logout: function () {
-      this.$store.dispatch('logout')
-      .then(() => {
-        this.$router.push('/login')
-      })
-    },
-  },
-}
+    logout: function() {
+      this.$store.dispatch("logout").then(() => {
+        this.$router.push("/login");
+      });
+    }
+  }
+};
 </script>
 
 <style>

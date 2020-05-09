@@ -67,7 +67,7 @@ export default {
         alert(error);
       }
       this.editTitle = false;
-    },
+    }
   },
   created: async function() {
     if (this.$route.params.problemPk) {

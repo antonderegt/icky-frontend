@@ -11,7 +11,7 @@ describe("CategoryCard.vue", () => {
         data: [
           { item: "mockItem 1", pk: 33 },
           { item: "mockItem 2", pk: 333 }
-        ] 
+        ]
       })
     );
 
@@ -23,20 +23,22 @@ describe("CategoryCard.vue", () => {
       },
       mocks: {
         $route: {
-          name: 'problem',
-          path: 'problem/1',
+          name: "problem",
+          path: "problem/1",
           params: { problemPk: 1 }
         }
       },
       stubs: ["router-link", "router-view"]
     });
 
-    window.alert = (jsdomAlert) => {console.log(jsdomAlert)};
+    window.alert = jsdomAlert => {
+      console.log(jsdomAlert);
+    };
     jest.clearAllMocks();
   });
 
   it("sets the correct default data", () => {
-    expect(typeof CategoryCard.data).toBe('function');
+    expect(typeof CategoryCard.data).toBe("function");
     const defaultData = CategoryCard.data();
     const expectedData = {
       category: "",
@@ -47,19 +49,19 @@ describe("CategoryCard.vue", () => {
       editTitle: false,
       editItem: -1,
       changedItem: ""
-    }
+    };
     expect(defaultData).toMatchObject(expectedData);
-  })
+  });
 
   it("receives correct props", async () => {
-    expect(wrapper.html()).toContain('mockCategory');
+    expect(wrapper.html()).toContain("mockCategory");
     expect(wrapper.props().problemPk).toBe(1);
     expect(wrapper.props().catPk).toBe(1);
   });
 
   it("renders items after api call", () => {
     expect(wrapper.findAll("#item").length).toBe(2);
-  })
+  });
 
   it.todo("changes title");
   it.todo("shows input field when clicked");

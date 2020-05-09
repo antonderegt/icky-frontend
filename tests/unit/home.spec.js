@@ -21,7 +21,9 @@ describe("Home.vue", () => {
       stubs: ["router-link", "router-view"]
     });
 
-    window.alert = (jsdomAlert) => { console.log(jsdomAlert) };
+    window.alert = jsdomAlert => {
+      console.log(jsdomAlert);
+    };
     jest.clearAllMocks();
   });
 
@@ -30,9 +32,9 @@ describe("Home.vue", () => {
   });
 
   it("sets the correct default data", () => {
-    expect(typeof Home.data).toBe('function')
-    const defaultData = Home.data()
-    expect(defaultData.problems).toMatchObject([])
+    expect(typeof Home.data).toBe("function");
+    const defaultData = Home.data();
+    expect(defaultData.problems).toMatchObject([]);
   });
 
   it("loads problems from api", async () => {

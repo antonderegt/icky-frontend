@@ -8,41 +8,41 @@ describe("Problem.vue", () => {
   beforeEach(() => {
     mockAxios.get.mockImplementationOnce(() =>
       Promise.resolve({
-        data: { 
+        data: {
           problem: "mockAxiosProb",
           pk: 15
         }
       })
     );
-    
+
     mockAxios.get.mockImplementationOnce(() =>
       Promise.resolve({
-        data:
-          [
-            { category: "mockAxiosCat", pk: 99 },
-            { category: "mockAxiosCat2", pk: 199 }
-          ]
+        data: [
+          { category: "mockAxiosCat", pk: 99 },
+          { category: "mockAxiosCat2", pk: 199 }
+        ]
       })
     );
 
     wrapper = shallowMount(Problem, {
       mocks: {
         $route: {
-          name: 'problem',
-          path: 'problem/1',
+          name: "problem",
+          path: "problem/1",
           params: { problemPk: 1 }
         }
       },
       stubs: ["router-link", "router-view"]
     });
 
-    window.alert = (jsdomAlert) => {console.log(jsdomAlert)};
+    window.alert = jsdomAlert => {
+      console.log(jsdomAlert);
+    };
     jest.clearAllMocks();
   });
-  
 
   it("sets the correct default data", () => {
-    expect(typeof Problem.data).toBe('function');
+    expect(typeof Problem.data).toBe("function");
     const defaultData = Problem.data();
     const expectedData = {
       problem: {
@@ -51,7 +51,7 @@ describe("Problem.vue", () => {
       },
       categories: [],
       editTitle: false
-    }
+    };
     expect(defaultData.problem).toMatchObject(expectedData.problem);
     expect(defaultData.categories).toMatchObject(expectedData.categories);
     expect(defaultData.editTitle).toBe(expectedData.editTitle);
@@ -71,7 +71,7 @@ describe("Problem.vue", () => {
     expect(mockAxios.put).toHaveBeenCalledTimes(0);
     mockAxios.put.mockImplementationOnce(() =>
       Promise.resolve({
-        data: { 
+        data: {
           category: "New category",
           pk: 299
         }
