@@ -3,7 +3,6 @@ import VueRouter from "vue-router";
 import store from "../store/index.js";
 import Home from "../views/Home.vue";
 import Login from "../views/Login.vue";
-import Logout from "../views/Logout.vue";
 
 Vue.use(VueRouter);
 
@@ -20,11 +19,6 @@ const routes = [
     path: "/login",
     name: "Login",
     component: Login
-  },
-  {
-    path: "/logout",
-    name: "Logout",
-    component: Logout
   },
   {
     path: "/problem/:problemPk",
