@@ -7,7 +7,8 @@ import axios from "axios";
 Vue.config.productionTip = false;
 
 if (store.getters.isLoggedIn) {
-  axios.defaults.headers.common["Authorization"] = "Token " + store.getters.tokenCookie;
+  axios.defaults.headers.common["Authorization"] =
+    "Token " + store.getters.tokenCookie;
 }
 
 new Vue({

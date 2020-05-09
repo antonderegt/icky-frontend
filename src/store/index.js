@@ -42,24 +42,32 @@ export default new Vuex.Store({
     get_problems_success(state, problems) {
       state.status = "success";
       problems.map(problem => {
-        if(state.problems.has(problem.pk)) {
+        if (state.problems.has(problem.pk)) {
           console.log("Problem already exists");
         } else {
-          state.problems.set(problem.pk, { problem: problem.problem, categories: new Map() });
+          state.problems.set(problem.pk, {
+            problem: problem.problem,
+            categories: new Map()
+          });
         }
-      })
+      });
     },
     get_problem_success(state, problem) {
       state.status = "success";
-      state.problems.set(problem.pk, { problem: problem.problem, categories: new Map() });
+      state.problems.set(problem.pk, {
+        problem: problem.problem,
+        categories: new Map()
+      });
     },
     get_categories_success(state, cats) {
       state.status = "success";
       const problemPk = cats.problemPk;
       const categories = cats.categories;
       categories.map(cat => {
-        state.problems.get(parseInt(problemPk)).categories.set(cat.pk, { category: cat.category, items: new Map() });
-      })
+        state.problems
+          .get(parseInt(problemPk))
+          .categories.set(cat.pk, { category: cat.category, items: new Map() });
+      });
     },
     get_items_success(state, items) {
       state.status = "success";
@@ -136,8 +144,8 @@ export default new Vuex.Store({
           .catch(error => {
             commit("get_error");
             reject(error);
-          })
-        });
+          });
+      });
     },
     getProblem({ commit }, pk) {
       return new Promise((resolve, reject) => {
@@ -150,8 +158,8 @@ export default new Vuex.Store({
           .catch(error => {
             commit("get_error");
             reject(error);
-          })
-        });
+          });
+      });
     },
     getCategories({ commit }, pk) {
       return new Promise((resolve, reject) => {
@@ -161,15 +169,15 @@ export default new Vuex.Store({
             const cats = {
               problemPk: pk,
               categories: res
-            }
+            };
             commit("get_categories_success", cats);
             resolve(res);
           })
           .catch(error => {
             commit("get_error");
             reject(error);
-          })
-        });
+          });
+      });
     },
     getItems({ commit }, problem) {
       return new Promise((resolve, reject) => {
@@ -180,15 +188,15 @@ export default new Vuex.Store({
               problemPk: problem.problemPk,
               catPk: problem.catPk,
               items: res
-            }
+            };
             commit("get_items_success", items);
             resolve(res);
           })
           .catch(error => {
             commit("get_error");
             reject(error);
-          })
-        });
+          });
+      });
     }
   },
   modules: {},

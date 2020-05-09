@@ -3,10 +3,16 @@
     <tr>
       <th v-if="!editTitle" @click="editTitle = true">
         <p>
-         {{ category }} 
-        </p></th>
+          {{ category }}
+        </p>
+      </th>
       <th v-else>
-        <input v-model="category" @keyup.enter="changeTitle" type="text" autofocus />
+        <input
+          v-model="category"
+          @keyup.enter="changeTitle"
+          type="text"
+          autofocus
+        />
         <button @click="changeTitle" class="add">V</button>
       </th>
       <button @click="deleteCategory" class="delete">X</button>
@@ -16,8 +22,7 @@
         v-if="editItem !== index"
         @click="changeToInputField(index, item.item)"
       >
-        <p>{{ item.item
-        }}</p>
+        <p>{{ item.item }}</p>
       </td>
       <td v-else>
         <input
@@ -27,7 +32,7 @@
         />
         <button @click="changeItem(item.pk)" class="add">V</button>
       </td>
-        <button @click="deleteItem(index, item.pk)" class="delete">X</button>
+      <button @click="deleteItem(index, item.pk)" class="delete">X</button>
     </tr>
     <tr>
       <td>
@@ -66,7 +71,7 @@ export default {
   },
   methods: {
     getItems: async function() {
-      const problem = { problemPk: this.problemPk, catPk: this.catPk} 
+      const problem = { problemPk: this.problemPk, catPk: this.catPk };
       this.$store
         .dispatch("getItems", problem)
         .then(res => {
@@ -74,7 +79,7 @@ export default {
         })
         .catch(error => {
           alert(error);
-        })
+        });
     },
     changeTitle: function() {
       try {
@@ -146,22 +151,22 @@ export default {
 </script>
 
 <style scoped>
-
 table.center {
-  margin-left:auto; 
-  margin-right:auto;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 p {
   margin: 2px;
 }
 
-tr,td {
-  text-align:left;
+tr,
+td {
+  text-align: left;
 }
 td:first-child {
-  padding-left:20px;
-  padding-right:0;
+  padding-left: 20px;
+  padding-right: 0;
 }
 
 input {
@@ -175,7 +180,7 @@ input {
 }
 
 .delete {
-  background-color:whitesmoke;
+  background-color: whitesmoke;
   border: 0;
   border-radius: 15%;
   color: tomato;
@@ -191,7 +196,7 @@ input {
   background-color: whitesmoke;
   border: 0;
   border-radius: 15%;
-  color:yellowgreen;
+  color: yellowgreen;
   font-weight: bold;
   margin: 5px;
 }

@@ -38,19 +38,25 @@ export default {
   methods: {
     getProblem: async function() {
       let problem = this.$store.getters.problems.get(parseInt(this.problem.pk));
-      if(problem !== undefined) {
+      if (problem !== undefined) {
         this.problem.problem = problem.problem;
       } else {
         try {
-          this.problem = await this.$store.dispatch("getProblem", this.problem.pk);
+          this.problem = await this.$store.dispatch(
+            "getProblem",
+            this.problem.pk
+          );
         } catch (error) {
           alert(error);
-        } 
+        }
       }
     },
     getCategories: async function() {
       try {
-        this.categories = await this.$store.dispatch("getCategories", this.problem.pk);
+        this.categories = await this.$store.dispatch(
+          "getCategories",
+          this.problem.pk
+        );
       } catch (error) {
         alert(error);
       }
