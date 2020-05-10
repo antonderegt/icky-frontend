@@ -1,5 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import router from "@/router/index.js";
 import login from "@/gateways/auth.js";
 import api from "@/gateways/api.js";
 import axios from "axios";
@@ -25,7 +26,8 @@ export default new Vuex.Store({
     status: "",
     token: checkCookieName("Token") || "",
     user: {},
-    problems: new Map()
+    problem: {},
+    problemList: []
   },
   mutations: {
     auth_request(state) {
@@ -39,41 +41,61 @@ export default new Vuex.Store({
     auth_error(state) {
       state.status = "error";
     },
-    get_problems_success(state, problems) {
+    get_problem_list_success(state, problems) {
       state.status = "success";
-      problems.map(problem => {
-        if (state.problems.has(problem.pk)) {
-          console.log("Problem already exists");
-        } else {
-          state.problems.set(problem.pk, {
-            problem: problem.problem,
-            categories: new Map()
+      state.problemList = problems;
+    },
+    get_problem_success(state, problem) {
+      state.status = "success";
+      state.problem = problem;
+    },
+    add_category(state, category) {
+      state.status = "success";
+      state.problem.categories.push(category);
+    },
+    change_problem_name(state, newName) {
+      state.status = "success";
+      state.problem.problem = newName;
+    },
+    change_category_name(state, catPk, newName) {
+      state.status = "success";
+      state.problem.categories.filter(cat => {
+        if (cat.pk === catPk) cat.category = newName;
+      });
+    },
+    delete_category(state, catPk) {
+      state.status = "success";
+      state.problem.categories.filter(cat => {
+        if (cat.pk !== catPk) return cat;
+      });
+    },
+    change_item_name(state, catPk, itemPk, newName) {
+      state.status = "success";
+      state.problem.categories.filter(cat => {
+        if (cat.pk === catPk) {
+          cat.items.filter(item => {
+            if (item.pk === itemPk) item.item = newName;
           });
         }
       });
     },
-    get_problem_success(state, problem) {
+    add_item(state, catPk, newItem) {
       state.status = "success";
-      state.problems.set(problem.pk, {
-        problem: problem.problem,
-        categories: new Map()
+      state.problem.categories.filter(cat => {
+        if (cat.pk === catPk) cat.items.push(newItem);
       });
     },
-    get_categories_success(state, cats) {
+    delete_item(state, catPk, itemPk) {
       state.status = "success";
-      const problemPk = cats.problemPk;
-      const categories = cats.categories;
-      categories.map(cat => {
-        state.problems
-          .get(parseInt(problemPk))
-          .categories.set(cat.pk, { category: cat.category, items: new Map() });
+      state.problem.categories.filter(cat => {
+        if (cat.pk === catPk) {
+          cat.items.filter(item => {
+            if (item.pk !== itemPk) return item;
+          });
+        }
       });
     },
-    get_items_success(state, items) {
-      state.status = "success";
-      state.items = items;
-    },
-    get_error(state) {
+    api_error(state) {
       state.status = "error";
     },
     logout(state) {
@@ -127,6 +149,7 @@ export default new Vuex.Store({
     },
     logout({ commit }) {
       return new Promise(resolve => {
+        router.push("/login");
         commit("logout");
         removeCookie("Token");
         delete axios.defaults.headers.common["Authorization"];
@@ -138,11 +161,11 @@ export default new Vuex.Store({
         api
           .get("/")
           .then(res => {
-            commit("get_problems_success", res.data);
+            commit("get_problem_list_success", res.data);
             resolve(res.data);
           })
           .catch(error => {
-            commit("get_error");
+            commit("api_error");
             reject(error);
           });
       });
@@ -150,50 +173,131 @@ export default new Vuex.Store({
     getProblem({ commit }, pk) {
       return new Promise((resolve, reject) => {
         api
-          .get(`/${pk}`)
+          .get(`/getall/${pk}`)
           .then(res => {
             commit("get_problem_success", res);
             resolve(res);
           })
           .catch(error => {
-            commit("get_error");
+            commit("api_error");
             reject(error);
           });
       });
     },
-    getCategories({ commit }, pk) {
+    addCategory({ commit }, pk) {
       return new Promise((resolve, reject) => {
         api
-          .get(`/${pk}/categories`)
+          .put(`/${pk}/new`, {
+            category: "New category"
+          })
           .then(res => {
-            const cats = {
-              problemPk: pk,
-              categories: res
-            };
-            commit("get_categories_success", cats);
-            resolve(res);
+            commit("add_category", res);
+            resolve();
           })
           .catch(error => {
-            commit("get_error");
+            commit("api_error");
             reject(error);
           });
       });
     },
-    getItems({ commit }, problem) {
+    changeProblemName({ commit }, updatedProblem) {
       return new Promise((resolve, reject) => {
         api
-          .get(`/${problem.problemPk}/${problem.catPk}`)
+          .put(`/${updatedProblem.pk}`, {
+            problem: updatedProblem.problem
+          })
+          .then(() => {
+            commit("change_problem_name", updatedProblem.problem);
+            resolve();
+          })
+          .catch(error => {
+            commit("api_error");
+            reject(error);
+          });
+      });
+    },
+    changeCategoryName({ commit }, updatedCategory) {
+      return new Promise((resolve, reject) => {
+        api
+          .put(`/${updatedCategory.problemPk}/${updatedCategory.catPk}`, {
+            category: updatedCategory.category
+          })
+          .then(() => {
+            commit("change_category_name", updatedCategory.category);
+            resolve();
+          })
+          .catch(error => {
+            commit("api_error");
+            reject(error);
+          });
+      });
+    },
+    deleteCategory({ commit }, toBeDeletedCategory) {
+      return new Promise((resolve, reject) => {
+        api
+          .delete(
+            `/${toBeDeletedCategory.problemPk}/${toBeDeletedCategory.catPk}`
+          )
+          .then(() => {
+            commit("delete_category", toBeDeletedCategory.catPk);
+            resolve();
+          })
+          .catch(error => {
+            commit("api_error");
+            reject(error);
+          });
+      });
+    },
+    changeItemName({ commit }, updatedItem) {
+      return new Promise((resolve, reject) => {
+        api
+          .put(
+            `/${updatedItem.problemPk}/${updatedItem.catPk}/${updatedItem.itemPk}`,
+            {
+              item: updatedItem.item
+            }
+          )
+          .then(() => {
+            commit(
+              "change_item_name",
+              updatedItem.catPk,
+              updatedItem.itemPk,
+              updatedItem.item
+            );
+            resolve();
+          })
+          .catch(error => {
+            commit("api_error");
+            reject(error);
+          });
+      });
+    },
+    addItem({ commit }, newItem) {
+      return new Promise((resolve, reject) => {
+        api
+          .put(`/${newItem.problemPk}/${newItem.catPk}/new`, {
+            item: newItem.item
+          })
           .then(res => {
-            const items = {
-              problemPk: problem.problemPk,
-              catPk: problem.catPk,
-              items: res
-            };
-            commit("get_items_success", items);
+            commit("add_item", newItem.catPk, res);
             resolve(res);
           })
           .catch(error => {
-            commit("get_error");
+            commit("api_error");
+            reject(error);
+          });
+      });
+    },
+    deleteItem({ commit }, item) {
+      return new Promise((resolve, reject) => {
+        api
+          .delete(`/${item.problemPk}/${item.catPk}/${item.itemPk}`)
+          .then(() => {
+            commit("delete_item", item.catPk, item.itemPk);
+            resolve();
+          })
+          .catch(error => {
+            commit("api_error");
             reject(error);
           });
       });
@@ -204,8 +308,7 @@ export default new Vuex.Store({
     isLoggedIn: state => !!state.token,
     tokenCookie: state => state.token,
     authStatus: state => state.status,
-    problems: state => state.problems,
-    categories: state => state.categories,
-    items: state => state.items
+    problem: state => state.problem,
+    problemList: state => state.problemList
   }
 });

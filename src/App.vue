@@ -10,18 +10,14 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from "vuex";
+
 export default {
   computed: {
-    isLoggedIn: function() {
-      return this.$store.getters.isLoggedIn;
-    }
+    ...mapGetters(["isLoggedIn"])
   },
   methods: {
-    logout: function() {
-      this.$store.dispatch("logout").then(() => {
-        this.$router.push("/login");
-      });
-    }
+    ...mapActions(["logout"])
   }
 };
 </script>

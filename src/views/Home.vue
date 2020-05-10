@@ -2,7 +2,7 @@
   <div class="home">
     <h1>Welcome to Icky</h1>
     <h3>Problems</h3>
-    <p v-for="problem in problems" id="problem" :key="problem.pk">
+    <p v-for="problem in problemList" id="problem" :key="problem.pk">
       <router-link :to="{ path: '/problem/' + problem.pk }">{{
         problem.problem
       }}</router-link>
@@ -11,25 +11,16 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from "vuex";
+
 export default {
-  data: function() {
-    return {
-      problems: []
-    };
+  computed: {
+    ...mapGetters(["problemList"])
   },
   methods: {
-    getProblems: async function() {
-      this.$store
-        .dispatch("getProblems")
-        .then(res => {
-          this.problems = res;
-        })
-        .catch(error => {
-          alert(error);
-        });
-    }
+    ...mapActions(["getProblems"])
   },
-  mounted: function() {
+  created: function() {
     this.getProblems();
   }
 };

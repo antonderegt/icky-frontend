@@ -3,21 +3,21 @@
     <tr>
       <th v-if="!editTitle" @click="editTitle = true">
         <p>
-          {{ category }}
+          {{ category.category }}
         </p>
       </th>
       <th v-else>
         <input
-          v-model="category"
+          v-model="category.category"
           @keyup.enter="changeTitle"
           type="text"
           autofocus
         />
-        <button @click="changeTitle" class="add">V</button>
+        <button @click="changeTitleHelper" class="add">V</button>
       </th>
-      <button @click="deleteCategory" class="delete">X</button>
+      <button @click="deleteCategoryHelper" class="delete">X</button>
     </tr>
-    <tr v-for="(item, index) in items" id="item" :key="item.pk">
+    <tr v-for="(item, index) in category.items" id="item" :key="item.pk">
       <td
         v-if="editItem !== index"
         @click="changeToInputField(index, item.item)"
@@ -27,125 +27,130 @@
       <td v-else>
         <input
           v-model="changedItem"
-          @keyup.enter="changeItem(item.pk)"
+          @keyup.enter="changeItemHelper(item.pk)"
           type="text"
         />
-        <button @click="changeItem(item.pk)" class="add">V</button>
+        <button @click="changeItemHelper(item.pk)" class="add">V</button>
       </td>
-      <button @click="deleteItem(index, item.pk)" class="delete">X</button>
+      <button @click="deleteItemHelper(index, item.pk)" class="delete">
+        X
+      </button>
     </tr>
     <tr>
       <td>
         <input
-          v-model="newItem"
-          @keyup.enter="addItem()"
+          v-model="newItemName"
+          @keyup.enter="addItemHelper"
           type="text"
           placeholder="new item..."
         />
-        <button @click="addItem" class="add">V</button>
+        <button @click="addItemHelper" class="add">V</button>
       </td>
     </tr>
   </table>
 </template>
 
 <script>
-import api from "@/gateways/api.js";
+import { mapActions } from "vuex";
 
 export default {
   props: {
-    problemPk: Number,
-    catName: String,
-    catPk: Number
+    problemPkProp: Number,
+    categoryProp: Object
   },
   data: function() {
     return {
-      category: "",
-      items: [],
+      category: {},
       deleting: false,
       showCategory: true,
-      newItem: "",
+      newItemName: "",
       editTitle: false,
       editItem: -1,
       changedItem: ""
     };
   },
   methods: {
-    getItems: async function() {
-      const problem = { problemPk: this.problemPk, catPk: this.catPk };
-      this.$store
-        .dispatch("getItems", problem)
-        .then(res => {
-          this.items = res;
-        })
-        .catch(error => {
-          alert(error);
-        });
+    ...mapActions([
+      "changeCategoryName",
+      "deleteCategory",
+      "changeItemName",
+      "addItem",
+      "deleteItem"
+    ]),
+    changeTitleHelper: function() {
+      const updatedCategory = {
+        problemPk: this.problemPkProp,
+        catPk: this.category.pk,
+        category: this.category.category
+      };
+      this.changeCategoryName(updatedCategory).then(() => {
+        this.editTitle = false;
+      });
     },
-    changeTitle: function() {
-      try {
-        api.put(`/${this.problemPk}/${this.catPk}`, {
-          category: this.category
+    deleteCategoryHelper: function() {
+      const toBeDeletedCategory = {
+        problemPk: this.problemPkProp,
+        catPk: this.category.pk
+      };
+      this.deleteCategory(toBeDeletedCategory).then(() => {
+        this.category = {};
+        this.showCategory = false;
+      });
+    },
+    changeItemHelper: function(itemPk) {
+      const updatedItem = {
+        problemPk: this.problemPkProp,
+        catPk: this.category.pk,
+        itemPk,
+        item: this.changedItem
+      };
+
+      this.changeItemName(updatedItem).then(() => {
+        this.category.items[this.editItem].item = this.changedItem;
+        this.editItem = -1;
+        this.changedItem = "";
+      });
+    },
+    addItemHelper: async function() {
+      if (this.newItemName == "") alert("You have to enter something first!");
+      else {
+        const newItem = {
+          problemPk: this.problemPkProp,
+          catPk: this.category.pk,
+          item: this.newItemName
+        };
+        this.addItem(newItem).then(res => {
+          if (this.category.item) {
+            this.category.items.push(res);
+          } else {
+            this.category.items = [];
+            this.category.items.push(res);
+          }
+          this.newItemName = "";
         });
-      } catch (error) {
-        alert(error);
       }
-      this.editTitle = false;
+    },
+    deleteItemHelper: function(index, itemPk) {
+      const item = {
+        problemPk: this.problemPkProp,
+        catPk: this.category.pk,
+        itemPk
+      };
+      this.deleteItem(item).then(() => {
+        this.deleting = true;
+        this.category.items.splice(index, 1);
+      });
     },
     changeToInputField(index, item) {
       if (!this.deleting) {
         this.editItem = index;
         this.changedItem = item;
       } else this.deleting = false;
-    },
-    changeItem: function(itemPk) {
-      try {
-        api.put(`/${this.problemPk}/${this.catPk}/${itemPk}`, {
-          item: this.changedItem
-        });
-      } catch (error) {
-        alert(error);
-      }
-      this.items[this.editItem].item = this.changedItem;
-      this.editItem = -1;
-      this.changedItem = "";
-    },
-    addItem: async function() {
-      if (this.newItem == "") alert("You have to enter something first!");
-      else {
-        try {
-          const item = await api.put(`/${this.problemPk}/${this.catPk}/new`, {
-            item: this.newItem
-          });
-          this.items.push(item);
-        } catch (error) {
-          alert(error);
-        }
-        this.newItem = "";
-      }
-    },
-    deleteItem: function(index, itemPk) {
-      this.deleting = true;
-      this.items.splice(index, 1);
-      try {
-        api.delete(`/${this.problemPk}/${this.catPk}/${itemPk}`);
-      } catch (error) {
-        alert(error);
-      }
-    },
-    deleteCategory: function() {
-      this.category = "";
-      this.items = [];
-      this.showCategory = false;
-      try {
-        api.delete(`/${this.problemPk}/${this.catPk}`);
-      } catch (error) {
-        alert(error);
-      }
     }
   },
-  mounted: function() {
-    this.category = this.catName;
-    this.getItems();
+  created: function() {
+    this.category = this.categoryProp;
+    if (this.category.items === undefined) this.category.items = [];
   }
 };
 </script>
